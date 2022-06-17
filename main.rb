@@ -1,24 +1,29 @@
 class LinkedList
-  attr_accessor :head, :tail
+  attr_reader :head
 
   def initialize
     @head = nil
-    @tail = nil
+  end
+
+  def tail
+    cursor = @head
+    while cursor
+      return cursor if cursor.next_node.nil?
+
+      cursor = cursor.next_node
+    end
   end
 
   def append(value)
     unless @head
       @head = Node.new(value)
-      @tail = @head
       return @head
     end
-    @tail.next_node = Node.new(value)
-    @tail = @tail.next_node
+    tail.next_node = Node.new(value)
   end
 
   def prepend(value)
     @head = Node.new(value, @head)
-    @tail ||= @head
   end
 
   def size
@@ -45,23 +50,14 @@ class LinkedList
 
   def pop
     cursor = @head
-
-    if cursor.next_node
-      while cursor
-        if cursor.next_node == @tail
-          popped = @tail
-          cursor.next_node = nil
-          @tail = cursor
-          break
-        end
-        cursor = cursor.next_node
+    while cursor
+      if cursor.next_node == tail
+        cursor.next_node = nil
+        return tail
       end
-    else
-      popped = @head
-      @head = nil
-      @tail = nil
+      cursor = cursor.next_node
     end
-    popped
+    @head = nil
   end
 
   def contains?(value)
@@ -95,7 +91,43 @@ class LinkedList
       cursor = cursor.next_node
     end
 
-    list += 'nil'
+    "#{list} nil"
+  end
+
+  def insert_at(value, index)
+    return @head = Node.new(value, @head) if index.zero?
+
+    cursor = @head
+    current_index = 0
+    while cursor
+      return cursor.next_node = Node.new(value, cursor.next_node) if current_index + 1 == index
+
+      cursor = cursor.next_node
+      current_index += 1
+    end
+    nil
+  end
+
+  def remove_at(index)
+    if index.zero?
+      to_remove = @head
+      @head = @head.next_node
+      return to_remove
+    end
+
+    cursor = @head
+    current_index = 0
+    while cursor
+      if current_index + 1 == index
+        return nil if cursor == tail
+
+        to_remove = cursor.next_node
+        cursor.next_node = to_remove.next_node
+        return to_remove
+      end
+      cursor = cursor.next_node
+    end
+    nil
   end
 end
 
