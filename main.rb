@@ -117,15 +117,14 @@ class LinkedList
 
     cursor = @head
     current_index = 0
-    while cursor
+    while cursor.next_node
       if current_index + 1 == index
-        return nil if cursor == tail
-
         to_remove = cursor.next_node
         cursor.next_node = to_remove.next_node
         return to_remove
       end
       cursor = cursor.next_node
+      current_index += 1
     end
     nil
   end
